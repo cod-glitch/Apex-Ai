@@ -108,7 +108,7 @@ async def imagine(update: Update, context: ContextTypes.DEFAULT_TYPE):
         encoded = urllib.parse.quote(prompt)
         image_url = (
             f"https://image.pollinations.ai/prompt/{encoded}"
-            f"?width=1024&height=1024&nologo=true&enhance=true&seed={abs(hash(prompt)) % 99999}"
+            f"?width=1024&height=1024&nologo=true&seed={abs(hash(prompt)) % 99999}"
         )
         async with aiohttp.ClientSession() as session:
             async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
@@ -184,7 +184,12 @@ async def analyze_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         vision_model = genai.GenerativeModel("gemini-2.5-flash-lite")
         response = vision_model.generate_content([
-            {"mime_type": "image/jpeg", "data": image_b64},
+            {
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": image_b64
+                }
+            },
             caption
         ])
 
