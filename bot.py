@@ -191,7 +191,12 @@ async def analyze_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
             caption
         ])
 
-        await update.message.reply_text(response.text)
+        reply = response.text
+        if len(reply) > 4096:
+            for i in range(0, len(reply), 4096):
+                await update.message.reply_text(reply[i:i+4096])
+        else:
+            await update.message.reply_text(reply)
 
     except Exception as e:
         logger.error(f"Image analysis error: {e}")
