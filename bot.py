@@ -82,20 +82,27 @@ async def imagine(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🎨 Generating your image, hold on...")
 
     try:
+        import asyncio
+        import aiohttp
         encoded = urllib.parse.quote(prompt)
         image_url = (
             f"https://image.pollinations.ai/prompt/{encoded}"
-            f"?width=1024&height=1024&nologo=true&enhance=true"
+            f"?width=1024&height=1024&nologo=true&enhance=true&seed={hash(prompt) % 99999}"
         )
-        await update.message.reply_photo(
-            photo=image_url,
-            caption=f"🎨 _{prompt}_",
-            parse_mode="Markdown"
-        )
+        async with aiohttp.ClientSession() as session:
+            async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
+                if resp.status == 200:
+                    image_data = await resp.read()
+                    await update.message.reply_photo(
+                        photo=image_data,
+                        caption=f"🎨 _{prompt}_",
+                        parse_mode="Markdown"
+                    )
+                else:
+                    await update.message.reply_text(f"⚠️ Image service returned error {resp.status}. Try again.")
     except Exception as e:
         logger.error(f"Image generation error: {e}")
-        await update.message.reply_text("⚠️ Couldn't generate the image. Try a different prompt.")
-
+        await update.message.reply_text(f"⚠️ Image error: {str(e)}")
 
 # ── Chat handler ─────────────────────────────────────────────────────────
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
