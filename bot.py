@@ -12,7 +12,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 # ── Gemini Setup ─────────────────────────────────────────────────────────
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-1.5-flash-latest",
     system_instruction=(
         "You are a smart, helpful AI assistant inside a Telegram bot. "
         "Be concise, friendly, and helpful. Format responses clearly. "
@@ -124,10 +124,9 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         logger.error(f"Gemini error: {e}")
-        await update.message.reply_text(
-            "⚠️ Something went wrong. Try again or use /clear to reset."
-        )
-
+        await update.message.reply_text(f"⚠️ Error: {str(e)}"
+                                       )
+    
 
 # ── Main ─────────────────────────────────────────────────────────────────
 def main():
