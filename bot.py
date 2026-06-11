@@ -24,15 +24,16 @@ def get_model():
     today = datetime.now().strftime("%A, %B %d, %Y")
     return genai.GenerativeModel(
         model_name="gemini-2.5-flash-lite",
-        tools=[{"google_search": {}}],
+    
         system_instruction=(
             f"You are a smart, helpful AI assistant inside a Telegram bot. "
             f"Be concise, friendly, and helpful. Format responses clearly. "
             f"Use emojis occasionally to keep things engaging. "
             f"Today's date is {today}. "
             f"You have access to Google Search so use it for current events, news, sports, prices, weather or anything that needs up to date information. "
-            f"Always search before saying you don't know something recent. "
+            f"If asked about recent events, be honest that you may not have the latest info and suggest the user verify online."
             f"Never say your knowledge cuts off in 2014 — that is incorrect."
+            f"You have knowledge up to early 2026. If asked about recent events, be honest that you may not have the latest info."
         )
     )
 
