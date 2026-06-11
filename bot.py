@@ -106,9 +106,7 @@ async def imagine(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         encoded = urllib.parse.quote(prompt)
-        image_url = (
-            f"https://image.pollinations.ai/prompt/{encoded}"
-            f"?width=1024&height=1024&nologo=true&seed={abs(hash(prompt)) % 99999}"
+        image_url = f"https://gen.pollinations.ai/image/{encoded}?width=1024&height=1024&nologo=true&seed={abs(hash(prompt)) % 99999}"
         )
         async with aiohttp.ClientSession() as session:
             async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
