@@ -105,11 +105,13 @@ async def imagine(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🎨 Generating your image, hold on...")
 
     try:
-        encoded = urllib.parse.quote(prompt)
-        image_url = f"https://gen.pollinations.ai/image/{encoded}?width=1024&height=1024&nologo=true&seed={abs(hash(prompt)) % 99999}"
-    
+        hf_key = os.environ.get("HF_API_KEY", "")
+        api_url = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
+        headers = {"Authorization": f"Bearer {hf_key}"}
+        payload = {"inputs": prompt}
+
         async with aiohttp.ClientSession() as session:
-            async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
+            async with session.post(api_url, headers=headers, json=payload, timeout=aiohttp.ClientTimeout(total=60)) as resp:
                 if resp.status == 200:
                     image_data = await resp.read()
                     await update.message.reply_photo(
@@ -118,7 +120,8 @@ async def imagine(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         parse_mode="Markdown"
                     )
                 else:
-                    await update.message.reply_text(f"⚠️ Image service returned error {resp.status}. Try again.")
+                    error = await resp.text()
+                    await update.message.reply_text(f"⚠️ Error {resp.status}: {error[:200]}")
     except Exception as e:
         logger.error(f"Image generation error: {e}")
         await update.message.reply_text(f"⚠️ Image error: {str(e)}")
