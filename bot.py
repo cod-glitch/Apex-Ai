@@ -12,7 +12,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 # ── Gemini Setup ─────────────────────────────────────────────────────────
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash-latest",
+    model_name="gemini-2.5-flash",
     system_instruction=(
         "You are a smart, helpful AI assistant inside a Telegram bot. "
         "Be concise, friendly, and helpful. Format responses clearly. "
